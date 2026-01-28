@@ -1,6 +1,4 @@
 import React from "react";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Home/Header";
 import MoodTracker from "../components/Home/MoodTracker";
 import JournalSummary from "../components/Home/JournalSummary";
 import BreathingWidget from "../components/Home/BreathingWidget";
@@ -9,27 +7,34 @@ import QuoteFooter from "../components/Home/QuoteFooter";
 
 const Home: React.FC = () => {
   return (
-    <div className="flex h-screen overflow-hidden bg-background-light dark:bg-background-dark">
-      <Sidebar />
-      <main className="flex-1 h-screen overflow-y-auto p-4 md:p-8 relative">
-        <Header />
+    <div className="pb-32">
+      <div className="mb-8 pl-2">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
+          SoulSync –{" "}
+          <span className="text-primary font-medium">
+            Gently listen to yourself
+          </span>
+        </h1>
+        <p className="text-text-muted dark:text-gray-400">
+          Hello Minh, let's take care of your soul.
+        </p>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-32">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-8">
-            <MoodTracker />
-            <JournalSummary />
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-8">
-            <BreathingWidget />
-            <EnergyStats />
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column */}
+        <div className="lg:col-span-2 space-y-8">
+          <MoodTracker />
+          <JournalSummary />
         </div>
 
-        <QuoteFooter />
-      </main>
+        {/* Right Column */}
+        <div className="space-y-8">
+          <BreathingWidget />
+          <EnergyStats />
+        </div>
+      </div>
+
+      <QuoteFooter />
     </div>
   );
 };

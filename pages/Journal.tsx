@@ -1,9 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Link } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
 import {
-  ArrowLeft,
-  Leaf,
   Search,
   Smile,
   Meh,
@@ -378,26 +374,10 @@ const Journal: React.FC = () => {
   }, [selectedEntry, isCreatingNew]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-950 font-sans">
-      <Sidebar />
-      <main className="flex-1 flex gap-6 p-4 h-full overflow-hidden">
+    <div className="flex gap-6 h-full overflow-hidden font-sans">
+      <main className="flex-1 flex gap-6 h-full overflow-hidden">
         {/* Left List Panel */}
         <div className="w-80 flex-shrink-0 flex flex-col gap-4 hidden lg:flex">
-          <div className="flex items-center gap-2 mb-2">
-            <Link
-              to="/"
-              className="p-2 rounded-full hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
-            >
-              <ArrowLeft size={20} />
-            </Link>
-            <div className="flex items-center gap-2 font-semibold text-lg">
-              <span className="text-emerald-600 dark:text-emerald-500">
-                <Leaf size={20} fill="currentColor" />
-              </span>
-              <span className="text-gray-900 dark:text-white">SoulSync</span>
-            </div>
-          </div>
-
           <div className="bg-white dark:bg-gray-900/50 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col flex-1 overflow-hidden backdrop-blur-sm">
             <div className="relative mb-4">
               <Search
@@ -469,19 +449,6 @@ const Journal: React.FC = () => {
 
         {/* Main Editor Panel */}
         <div className="flex-1 flex flex-col h-full overflow-hidden">
-          <header className="flex justify-between items-center mb-4 px-2 py-2">
-            <Link
-              to="/"
-              className="lg:hidden p-2 rounded-full hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 text-gray-600 dark:text-gray-400"
-            >
-              <ArrowLeft size={20} />
-            </Link>
-            <div className="flex items-center gap-3 bg-white dark:bg-gray-900/50 px-5 py-2.5 rounded-full shadow-sm border border-gray-100 dark:border-gray-800 text-sm font-medium text-gray-600 dark:text-gray-400 ml-auto backdrop-blur-sm transition-all duration-300 hover:shadow-md">
-              <Clock size={16} />
-              {formatFullDate()}
-            </div>
-          </header>
-
           <div className="flex-1 bg-white dark:bg-gray-900/50 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col relative overflow-hidden backdrop-blur-sm">
             <div className="flex justify-between items-start mb-8">
               <div>

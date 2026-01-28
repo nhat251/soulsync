@@ -11,7 +11,7 @@ const Sidebar: React.FC = () => {
     }`;
 
   return (
-    <aside className="w-24 h-[95vh] my-auto ml-4 flex flex-col items-center py-8 bg-surface-light dark:bg-surface-dark rounded-3xl shadow-sm sticky top-4 z-50 transition-colors duration-300 hidden md:flex border border-white/20">
+    <aside className="w-24 h-screen flex flex-col items-center py-8 bg-surface-light dark:bg-surface-dark border-r border-gray-200 dark:border-gray-800 z-50 transition-colors duration-300 hidden md:flex">
       <div className="mb-10 p-3 bg-accent-light dark:bg-primary/20 rounded-2xl text-primary">
         <Leaf size={24} />
       </div>

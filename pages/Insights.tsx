@@ -1,23 +1,23 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ResponsiveContainer, AreaChart, Area, XAxis, Tooltip } from "recharts";
-import Sidebar from "../components/Sidebar";
-import { ArrowLeft, Leaf, Calendar, Brain, ArrowRight } from "lucide-react";
+import { Brain, ArrowRight, Leaf } from "lucide-react";
 import { useJournal, MoodType } from "@/contexts/journalContext";
 
 const Insights: React.FC = () => {
   const { entries } = useJournal();
 
   // Phân loại cảm xúc thành tích cực và tiêu cực
-  const moodCategories: Record<MoodType, "positive" | "neutral" | "negative"> = {
-    happy: "positive",
-    excited: "positive",
-    grateful: "positive",
-    loved: "positive",
-    neutral: "neutral",
-    sad: "negative",
-    anxious: "negative",
-  };
+  const moodCategories: Record<MoodType, "positive" | "neutral" | "negative"> =
+    {
+      happy: "positive",
+      excited: "positive",
+      grateful: "positive",
+      loved: "positive",
+      neutral: "neutral",
+      sad: "negative",
+      anxious: "negative",
+    };
 
   // Tính toán dữ liệu cho biểu đồ tuần này
   const weeklyData = useMemo(() => {
@@ -58,14 +58,17 @@ const Insights: React.FC = () => {
         const total = dayEntries.length;
         // Tính điểm: positive = 100, neutral = 50, negative = 0
         score = Math.round(
-          ((positiveCount * 100 + neutralCount * 50 + negativeCount * 0) / total)
+          (positiveCount * 100 + neutralCount * 50 + negativeCount * 0) / total,
         );
       }
 
       data.push({
         name: dayName,
         value: score,
-        date: date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" }),
+        date: date.toLocaleDateString("vi-VN", {
+          day: "2-digit",
+          month: "2-digit",
+        }),
         count: dayEntries.length,
       });
     }
@@ -103,7 +106,7 @@ const Insights: React.FC = () => {
     const neutralPercent = 100 - positivePercent - negativePercent;
 
     const averageScore = Math.round(
-      (positiveCount * 100 + neutralCount * 50 + negativeCount * 0) / total
+      (positiveCount * 100 + neutralCount * 50 + negativeCount * 0) / total,
     );
 
     // Tính streak (số ngày liên tiếp có ghi chép)
@@ -239,33 +242,8 @@ const Insights: React.FC = () => {
   });
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background-light dark:bg-background-dark font-sans">
-      <Sidebar />
-      <main className="flex-1 max-w-7xl mx-auto overflow-y-auto p-4 md:p-8">
-        {/* Header */}
-        <header className="flex items-center justify-between mb-8 px-2">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-text-muted dark:text-gray-400">
-              <Link to="/" className="hover:text-primary transition-colors">
-                <ArrowLeft size={24} />
-              </Link>
-              <div className="flex items-center gap-2 font-semibold text-lg text-text-main dark:text-white">
-                <Leaf className="text-primary" size={24} />
-                SoulSync{" "}
-                <span className="text-text-muted dark:text-gray-500 font-normal">
-                  Insights
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="px-4 py-2 bg-surface-light dark:bg-card-dark rounded-full shadow-sm border border-gray-100 dark:border-gray-800 flex items-center gap-2 text-sm font-medium text-text-muted dark:text-gray-400">
-              <Calendar size={16} />
-              {monthName}
-            </div>
-          </div>
-        </header>
-
+    <div className="font-sans">
+      <main>
         {/* Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           {/* Chart */}
@@ -393,7 +371,9 @@ const Insights: React.FC = () => {
             </div>
             <div>
               <h4 className="text-xs uppercase tracking-wider text-gray-500 mb-3 font-semibold">
-                {popularTags.length > 0 ? "Chủ đề phổ biến" : "Bắt đầu ghi chép"}
+                {popularTags.length > 0
+                  ? "Chủ đề phổ biến"
+                  : "Bắt đầu ghi chép"}
               </h4>
               <div className="flex flex-wrap gap-2">
                 {popularTags.length > 0 ? (
@@ -413,8 +393,12 @@ const Insights: React.FC = () => {
               </div>
               {statistics.totalEntries > 0 && (
                 <div className="mt-4 pt-4 border-t border-white/10">
-                  <div className="text-xs text-gray-400 mb-1">Tổng ghi chép</div>
-                  <div className="text-2xl font-bold">{statistics.totalEntries}</div>
+                  <div className="text-xs text-gray-400 mb-1">
+                    Tổng ghi chép
+                  </div>
+                  <div className="text-2xl font-bold">
+                    {statistics.totalEntries}
+                  </div>
                 </div>
               )}
             </div>
@@ -452,13 +436,14 @@ const Insights: React.FC = () => {
                 return <div key={`empty-${i}`} className="aspect-square"></div>;
               }
 
-              const moodColor = day.mood === "positive"
-                ? "bg-green-500"
-                : day.mood === "negative"
-                ? "bg-orange-500"
-                : day.mood === "neutral"
-                ? "bg-blue-500"
-                : "bg-primary";
+              const moodColor =
+                day.mood === "positive"
+                  ? "bg-green-500"
+                  : day.mood === "negative"
+                    ? "bg-orange-500"
+                    : day.mood === "neutral"
+                      ? "bg-blue-500"
+                      : "bg-primary";
 
               return (
                 <div
@@ -481,15 +466,17 @@ const Insights: React.FC = () => {
                           day.mood === "positive"
                             ? "Tích cực"
                             : day.mood === "negative"
-                            ? "Tiêu cực"
-                            : "Trung lập"
+                              ? "Tiêu cực"
+                              : "Trung lập"
                         }`
                       : "Chưa có ghi chép"
                   }
                 >
                   {day.day}
                   {day.hasData && (
-                    <span className={`w-1.5 h-1.5 rounded-full mt-1 ${moodColor}`}></span>
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full mt-1 ${moodColor}`}
+                    ></span>
                   )}
                 </div>
               );

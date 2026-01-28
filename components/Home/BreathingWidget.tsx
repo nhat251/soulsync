@@ -3,27 +3,27 @@ import { Wind, Play } from "lucide-react";
 import PlayerControls from "../PlayerControls";
 
 const BreathingWidget: React.FC = () => {
-    /* ===================== BREATHING ===================== */
-    const [isStarted, setIsStarted] = useState(false);
-    const [isBreathing, setIsBreathing] = useState(false);
-    const [breathTime, setBreathTime] = useState(260);
-    const [phase, setPhase] = useState("Hít vào chậm");
-  
-    useEffect(() => {
-      let interval: any;
-      if (isBreathing && breathTime > 0) {
-        interval = setInterval(() => {
-          setBreathTime((prev) => prev - 1);
-  
-          const mod = breathTime % 16;
-          if (mod > 12) setPhase("Hít vào");
-          else if (mod > 8) setPhase("Giữ");
-          else if (mod > 4) setPhase("Thở ra");
-          else setPhase("Giữ");
-        }, 1000);
-      }
-      return () => clearInterval(interval);
-    }, [isBreathing, breathTime]);
+  /* ===================== BREATHING ===================== */
+  const [isStarted, setIsStarted] = useState(false);
+  const [isBreathing, setIsBreathing] = useState(false);
+  const [breathTime, setBreathTime] = useState(300);
+  const [phase, setPhase] = useState("Hít vào chậm");
+
+  useEffect(() => {
+    let interval: any;
+    if (isBreathing && breathTime > 0) {
+      interval = setInterval(() => {
+        setBreathTime((prev) => prev - 1);
+
+        const mod = breathTime % 16;
+        if (mod > 12) setPhase("Hít vào");
+        else if (mod > 8) setPhase("Giữ");
+        else if (mod > 4) setPhase("Thở ra");
+        else setPhase("Giữ");
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isBreathing, breathTime]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);

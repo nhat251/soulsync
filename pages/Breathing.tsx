@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
 import PlayerControls from "../components/PlayerControls";
 import {
   ArrowLeft,
@@ -105,33 +104,13 @@ const Breathing: React.FC = () => {
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
-    return `${m.toString().padStart(2, "0")}:${s
-      .toString()
-      .padStart(2, "0")}`;
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
   /* ===================== RENDER ===================== */
   return (
-    <div className="flex h-screen overflow-hidden bg-gradient-to-br from-[#f3f6f8] to-[#eef2f5] dark:from-[#111827] dark:to-[#1f2937]">
-      <Sidebar />
-
+    <div className="flex h-full gap-6">
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* HEADER */}
-        <header className="flex items-center justify-between px-8 py-6">
-          <div className="flex items-center gap-4">
-            <Link to="/" className="p-2 rounded-full hover:bg-white/50">
-              <ArrowLeft size={22} />
-            </Link>
-            <div className="flex items-center gap-2 text-xl font-bold">
-              <Leaf className="text-primary" />
-              SoulSync
-            </div>
-          </div>
-          <div className="px-4 py-2 rounded-full bg-white text-sm shadow">
-            Box Breathing
-          </div>
-        </header>
-
         {/* BREATHING */}
         <div className="flex-1 flex flex-col items-center justify-center">
           <div
@@ -139,15 +118,15 @@ const Breathing: React.FC = () => {
               isBreathing ? "animate-breathe" : ""
             }`}
           >
-            <div className="text-6xl font-bold">
-              {formatTime(breathTime)}
-            </div>
+            <div className="text-6xl font-bold">{formatTime(breathTime)}</div>
             <div className="text-primary mt-2">{phase}</div>
           </div>
 
-          <PlayerControls isBreathing={isBreathing}
-          onPlayPause={() => setIsBreathing(!isBreathing)}
-          onReset={() => setBreathTime(300)}></PlayerControls>
+          <PlayerControls
+            isBreathing={isBreathing}
+            onPlayPause={() => setIsBreathing(!isBreathing)}
+            onReset={() => setBreathTime(300)}
+          ></PlayerControls>
         </div>
 
         {/* MUSIC PLAYER */}
@@ -215,7 +194,7 @@ const Breathing: React.FC = () => {
       </main>
 
       {/* RIGHT SIDEBAR */}
-      <aside className="w-80 bg-white border-l hidden lg:flex flex-col p-6">
+      <aside className="w-80 bg-white border-l hidden lg:flex flex-col p-6 rounded-2xl h-full overflow-y-auto">
         <div className="flex items-center gap-2 mb-6">
           <Volume1 />
           <span className="font-bold text-sm uppercase">

@@ -20,14 +20,12 @@ const ThemeToggle: React.FC = () => {
   };
 
   return (
-    <div className="fixed top-4 right-4 z-[100]">
-      <button
-        className="p-2 rounded-full bg-white dark:bg-gray-800 shadow-md text-gray-600 dark:text-yellow-400 hover:scale-110 transition-transform"
-        onClick={toggleTheme}
-      >
-        {isDark ? <Sun size={20} /> : <Moon size={20} />}
-      </button>
-    </div>
+    <button
+      className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-yellow-400 hover:scale-110 transition-transform"
+      onClick={toggleTheme}
+    >
+      {isDark ? <Sun size={20} /> : <Moon size={20} />}
+    </button>
   );
 };
 
