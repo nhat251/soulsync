@@ -1,20 +1,243 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ResponsiveContainer, AreaChart, Area, XAxis, Tooltip } from "recharts";
 import Sidebar from "../components/Sidebar";
 import { ArrowLeft, Leaf, Calendar, Brain, ArrowRight } from "lucide-react";
-
-const data = [
-  { name: "T2", value: 60 },
-  { name: "T3", value: 70 },
-  { name: "T4", value: 65 },
-  { name: "T5", value: 85 },
-  { name: "T6", value: 80 },
-  { name: "T7", value: 90 },
-  { name: "CN", value: 85 },
-];
+import { useJournal, MoodType } from "@/contexts/journalContext";
 
 const Insights: React.FC = () => {
+  const { entries } = useJournal();
+
+  // Phân loại cảm xúc thành tích cực và tiêu cực
+  const moodCategories: Record<MoodType, "positive" | "neutral" | "negative"> = {
+    happy: "positive",
+    excited: "positive",
+    grateful: "positive",
+    loved: "positive",
+    neutral: "neutral",
+    sad: "negative",
+    anxious: "negative",
+  };
+
+  // Tính toán dữ liệu cho biểu đồ tuần này
+  const weeklyData = useMemo(() => {
+    const now = new Date();
+    const weekDays = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+    const data = [];
+
+    // Lấy 7 ngày gần nhất
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(date.getDate() - i);
+      date.setHours(0, 0, 0, 0);
+
+      const dayName = weekDays[date.getDay()];
+
+      // Lọc các entries trong ngày này
+      const dayEntries = entries.filter((entry) => {
+        const entryDate = new Date(entry.timestamp);
+        entryDate.setHours(0, 0, 0, 0);
+        return entryDate.getTime() === date.getTime();
+      });
+
+      // Tính điểm cảm xúc cho ngày này
+      let score = 50; // Mặc định là 50 nếu không có dữ liệu
+
+      if (dayEntries.length > 0) {
+        let positiveCount = 0;
+        let negativeCount = 0;
+        let neutralCount = 0;
+
+        dayEntries.forEach((entry) => {
+          const category = moodCategories[entry.mood];
+          if (category === "positive") positiveCount++;
+          else if (category === "negative") negativeCount++;
+          else neutralCount++;
+        });
+
+        const total = dayEntries.length;
+        // Tính điểm: positive = 100, neutral = 50, negative = 0
+        score = Math.round(
+          ((positiveCount * 100 + neutralCount * 50 + negativeCount * 0) / total)
+        );
+      }
+
+      data.push({
+        name: dayName,
+        value: score,
+        date: date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" }),
+        count: dayEntries.length,
+      });
+    }
+
+    return data;
+  }, [entries]);
+
+  // Tính toán thống kê tổng quan
+  const statistics = useMemo(() => {
+    if (entries.length === 0) {
+      return {
+        positivePercent: 0,
+        negativePercent: 0,
+        neutralPercent: 0,
+        averageScore: 50,
+        totalEntries: 0,
+        streak: 0,
+      };
+    }
+
+    let positiveCount = 0;
+    let negativeCount = 0;
+    let neutralCount = 0;
+
+    entries.forEach((entry) => {
+      const category = moodCategories[entry.mood];
+      if (category === "positive") positiveCount++;
+      else if (category === "negative") negativeCount++;
+      else neutralCount++;
+    });
+
+    const total = entries.length;
+    const positivePercent = Math.round((positiveCount / total) * 100);
+    const negativePercent = Math.round((negativeCount / total) * 100);
+    const neutralPercent = 100 - positivePercent - negativePercent;
+
+    const averageScore = Math.round(
+      (positiveCount * 100 + neutralCount * 50 + negativeCount * 0) / total
+    );
+
+    // Tính streak (số ngày liên tiếp có ghi chép)
+    let streak = 0;
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    for (let i = 0; i < 365; i++) {
+      const checkDate = new Date(now);
+      checkDate.setDate(checkDate.getDate() - i);
+      checkDate.setHours(0, 0, 0, 0);
+
+      const hasEntry = entries.some((entry) => {
+        const entryDate = new Date(entry.timestamp);
+        entryDate.setHours(0, 0, 0, 0);
+        return entryDate.getTime() === checkDate.getTime();
+      });
+
+      if (hasEntry) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+
+    return {
+      positivePercent,
+      negativePercent,
+      neutralPercent,
+      averageScore,
+      totalEntries: total,
+      streak,
+    };
+  }, [entries]);
+
+  // Tìm các tags phổ biến nhất
+  const popularTags = useMemo(() => {
+    const tagCount: Record<string, number> = {};
+
+    entries.forEach((entry) => {
+      entry.tags.forEach((tag) => {
+        tagCount[tag.label] = (tagCount[tag.label] || 0) + 1;
+      });
+    });
+
+    return Object.entries(tagCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([label]) => label);
+  }, [entries]);
+
+  // Tạo insight text dựa trên dữ liệu
+  const insightText = useMemo(() => {
+    if (statistics.totalEntries === 0) {
+      return "Bắt đầu ghi chép để nhận được phân tích cảm xúc từ AI.";
+    }
+
+    if (statistics.positivePercent >= 70) {
+      return `Bạn đang có trạng thái cảm xúc rất tích cực với ${statistics.positivePercent}% ghi chép mang tâm trạng vui vẻ. Hãy tiếp tục duy trì!`;
+    } else if (statistics.positivePercent >= 50) {
+      return `Tâm trạng của bạn khá ổn định với ${statistics.positivePercent}% ghi chép tích cực. Một vài biến động là điều bình thường.`;
+    } else if (statistics.negativePercent >= 50) {
+      return `Bạn có vẻ đang trải qua giai đoạn khó khăn với ${statistics.negativePercent}% ghi chép tiêu cực. Hãy dành thời gian chăm sóc bản thân nhé.`;
+    } else {
+      return `Cảm xúc của bạn khá cân bằng giữa tích cực (${statistics.positivePercent}%) và các trạng thái khác. Đây là điều tốt!`;
+    }
+  }, [statistics]);
+
+  // Tạo dữ liệu lịch cho tháng hiện tại
+  const calendarData = useMemo(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+
+    const calendar = [];
+    const startDayOfWeek = firstDay.getDay();
+
+    // Thêm các ngày trống ở đầu
+    for (let i = 0; i < startDayOfWeek; i++) {
+      calendar.push(null);
+    }
+
+    // Thêm các ngày trong tháng
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      date.setHours(0, 0, 0, 0);
+
+      const dayEntries = entries.filter((entry) => {
+        const entryDate = new Date(entry.timestamp);
+        entryDate.setHours(0, 0, 0, 0);
+        return entryDate.getTime() === date.getTime();
+      });
+
+      let mood: "positive" | "neutral" | "negative" | null = null;
+      if (dayEntries.length > 0) {
+        let positiveCount = 0;
+        let negativeCount = 0;
+
+        dayEntries.forEach((entry) => {
+          const category = moodCategories[entry.mood];
+          if (category === "positive") positiveCount++;
+          else if (category === "negative") negativeCount++;
+        });
+
+        if (positiveCount > negativeCount) mood = "positive";
+        else if (negativeCount > positiveCount) mood = "negative";
+        else mood = "neutral";
+      }
+
+      const isToday =
+        date.getDate() === now.getDate() &&
+        date.getMonth() === now.getMonth() &&
+        date.getFullYear() === now.getFullYear();
+
+      calendar.push({
+        day,
+        hasData: dayEntries.length > 0,
+        mood,
+        isToday,
+        entryCount: dayEntries.length,
+      });
+    }
+
+    return calendar;
+  }, [entries]);
+
+  const monthName = new Date().toLocaleDateString("vi-VN", {
+    month: "long",
+    year: "numeric",
+  });
+
   return (
     <div className="flex h-screen overflow-hidden bg-background-light dark:bg-background-dark font-sans">
       <Sidebar />
@@ -38,7 +261,7 @@ const Insights: React.FC = () => {
           <div className="flex items-center gap-3">
             <div className="px-4 py-2 bg-surface-light dark:bg-card-dark rounded-full shadow-sm border border-gray-100 dark:border-gray-800 flex items-center gap-2 text-sm font-medium text-text-muted dark:text-gray-400">
               <Calendar size={16} />
-              Tháng 10, 2023
+              {monthName}
             </div>
           </div>
         </header>
@@ -53,7 +276,9 @@ const Insights: React.FC = () => {
                   Xu hướng cảm xúc tuần này
                 </h2>
                 <p className="text-sm text-text-muted dark:text-gray-400">
-                  Bạn đang có một tuần khá ổn định
+                  {statistics.totalEntries > 0
+                    ? `${statistics.positivePercent}% tích cực, ${statistics.negativePercent}% tiêu cực, ${statistics.neutralPercent}% trung lập`
+                    : "Chưa có dữ liệu ghi chép"}
                 </p>
               </div>
               <div className="flex gap-4 text-xs font-medium">
@@ -63,14 +288,18 @@ const Insights: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-1 text-text-muted dark:text-gray-400">
                   <span className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600"></span>{" "}
-                  Bình lặng
+                  Trung lập
+                </div>
+                <div className="flex items-center gap-1 text-orange-600 dark:text-orange-500">
+                  <span className="w-2 h-2 rounded-full bg-orange-600 dark:bg-orange-500"></span>{" "}
+                  Tiêu cực
                 </div>
               </div>
             </div>
 
             <div className="h-48 w-full mt-4">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data}>
+                <AreaChart data={weeklyData}>
                   <defs>
                     <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#6B9080" stopOpacity={0.3} />
@@ -78,13 +307,25 @@ const Insights: React.FC = () => {
                     </linearGradient>
                   </defs>
                   <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#fff",
-                      borderRadius: "10px",
-                      border: "none",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-lg border border-gray-200 dark:border-gray-700">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                              {data.date}
+                            </p>
+                            <p className="text-sm font-bold text-primary">
+                              Điểm cảm xúc: {data.value}
+                            </p>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                              {data.count} ghi chép
+                            </p>
+                          </div>
+                        );
+                      }
+                      return null;
                     }}
-                    itemStyle={{ color: "#6B9080", fontWeight: "bold" }}
                   />
                   <Area
                     type="monotone"
@@ -104,6 +345,34 @@ const Insights: React.FC = () => {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
+
+            {/* Thống kê bổ sung */}
+            <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-500">
+                  {statistics.positivePercent}%
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Tích cực
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-600 dark:text-gray-400">
+                  {statistics.neutralPercent}%
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Trung lập
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-500">
+                  {statistics.negativePercent}%
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Tiêu cực
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* AI Insight Card */}
@@ -118,75 +387,109 @@ const Insights: React.FC = () => {
               </div>
               <div className="bg-white/5 rounded-xl p-4 border border-white/10 backdrop-blur-sm mb-6">
                 <p className="text-sm leading-relaxed text-gray-300 italic">
-                  "Bạn có xu hướng cảm thấy tích cực nhất vào buổi sáng sau khi
-                  tập thở. Sự lo âu thường xuất hiện vào chiều tối Thứ Năm."
+                  "{insightText}"
                 </p>
               </div>
             </div>
             <div>
               <h4 className="text-xs uppercase tracking-wider text-gray-500 mb-3 font-semibold">
-                Chủ đề tuần này
+                {popularTags.length > 0 ? "Chủ đề phổ biến" : "Bắt đầu ghi chép"}
               </h4>
               <div className="flex flex-wrap gap-2">
-                {["Sự tập trung", "Biết ơn", "Sáng tạo"].map((tag, i) => (
-                  <span
-                    key={i}
-                    className="px-3 py-1.5 rounded-full bg-white/10 text-xs font-medium border border-white/5 hover:bg-white/20 transition cursor-pointer"
-                  >
-                    {tag}
-                  </span>
-                ))}
+                {popularTags.length > 0 ? (
+                  popularTags.map((tag, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1.5 rounded-full bg-white/10 text-xs font-medium border border-white/5 hover:bg-white/20 transition cursor-pointer"
+                    >
+                      {tag}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-xs text-gray-400">
+                    Thêm tags vào journal để xem thống kê
+                  </p>
+                )}
               </div>
+              {statistics.totalEntries > 0 && (
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <div className="text-xs text-gray-400 mb-1">Tổng ghi chép</div>
+                  <div className="text-2xl font-bold">{statistics.totalEntries}</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Calendar Heatmap (Simplified visual representation) */}
+        {/* Calendar Heatmap */}
         <div className="bg-surface-light dark:bg-card-dark rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 mb-6">
           <div className="flex justify-between items-center mb-8">
             <div>
               <h2 className="text-xl font-bold mb-1 text-gray-800 dark:text-white">
-                Lịch sử cảm xúc tháng 10
+                Lịch sử cảm xúc {monthName}
               </h2>
               <p className="text-sm text-text-muted dark:text-gray-400">
                 Ghi nhận liên tiếp:{" "}
-                <span className="font-semibold text-primary">12 ngày</span>
+                <span className="font-semibold text-primary">
+                  {statistics.streak} ngày
+                </span>
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-7 gap-4 text-center">
-            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+            {["CN", "T2", "T3", "T4", "T5", "T6", "T7"].map((d) => (
               <div
                 key={d}
-                className="text-xs text-text-muted dark:text-gray-500 uppercase mb-2"
+                className="text-xs text-text-muted dark:text-gray-500 uppercase mb-2 font-medium"
               >
                 {d}
               </div>
             ))}
 
-            {/* Dummy Calendar Days */}
-            {[...Array(30)].map((_, i) => {
-              const day = i + 1;
-              // Mocking some data states
-              const isToday = day === 4; // Mocking today is the 4th displayed
-              const hasData = [1, 2, 4].includes(day);
-              const moodColor = day === 2 ? "bg-accent-blue" : "bg-primary";
-              const opacity = day === 3 ? "bg-primary/40" : moodColor;
+            {calendarData.map((day, i) => {
+              if (!day) {
+                return <div key={`empty-${i}`} className="aspect-square"></div>;
+              }
+
+              const moodColor = day.mood === "positive"
+                ? "bg-green-500"
+                : day.mood === "negative"
+                ? "bg-orange-500"
+                : day.mood === "neutral"
+                ? "bg-blue-500"
+                : "bg-primary";
 
               return (
                 <div
-                  key={day}
+                  key={day.day}
                   className={`aspect-square rounded-2xl flex flex-col items-center justify-center relative group hover:ring-2 hover:ring-primary/20 transition cursor-pointer text-sm font-medium
-                             ${hasData ? "bg-primary/5 dark:bg-primary/10" : "bg-background-light dark:bg-gray-800/50 text-gray-400 dark:text-gray-500"}
-                             ${isToday ? "bg-white dark:bg-gray-700 shadow-md border-2 border-primary/20 text-primary font-bold" : ""}
+                             ${
+                               day.hasData
+                                 ? "bg-primary/5 dark:bg-primary/10"
+                                 : "bg-background-light dark:bg-gray-800/50 text-gray-400 dark:text-gray-500"
+                             }
+                             ${
+                               day.isToday
+                                 ? "bg-white dark:bg-gray-700 shadow-md border-2 border-primary/20 text-primary font-bold"
+                                 : ""
+                             }
                         `}
+                  title={
+                    day.hasData
+                      ? `${day.entryCount} ghi chép - ${
+                          day.mood === "positive"
+                            ? "Tích cực"
+                            : day.mood === "negative"
+                            ? "Tiêu cực"
+                            : "Trung lập"
+                        }`
+                      : "Chưa có ghi chép"
+                  }
                 >
-                  {day}
-                  {hasData && (
-                    <span
-                      className={`w-1.5 h-1.5 rounded-full mt-1 ${opacity}`}
-                    ></span>
+                  {day.day}
+                  {day.hasData && (
+                    <span className={`w-1.5 h-1.5 rounded-full mt-1 ${moodColor}`}></span>
                   )}
                 </div>
               );
@@ -210,8 +513,9 @@ const Insights: React.FC = () => {
                   Dành riêng cho hôm nay
                 </h3>
                 <p className="text-sm text-text-muted dark:text-gray-400 mt-1">
-                  Dựa trên cảm xúc hiện tại, hãy dành 5 phút để thư giãn hơi
-                  thở.
+                  {statistics.negativePercent > 40
+                    ? "Dựa trên cảm xúc hiện tại, hãy dành 5 phút để thư giãn hơi thở."
+                    : "Bạn đang có tâm trạng tốt! Hãy duy trì bằng cách thực hành thở sâu."}
                 </p>
               </div>
             </div>
