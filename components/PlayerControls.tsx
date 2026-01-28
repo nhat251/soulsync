@@ -2,7 +2,7 @@ import React from "react";
 import { RotateCcw, Pause, Play, Volume2 } from "lucide-react";
 
 interface PlayerControlsProps {
-  isPlaying: boolean;
+  isBreathing: boolean;
   onPlayPause: () => void;
   onReset: () => void;
   onVolumeClick?: () => void;
@@ -10,7 +10,7 @@ interface PlayerControlsProps {
 }
 
 const PlayerControls: React.FC<PlayerControlsProps> = ({
-  isPlaying,
+  isBreathing,
   onPlayPause,
   onReset,
   onVolumeClick,
@@ -28,9 +28,9 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
       <button
         className="w-16 h-16 rounded-full bg-primary text-white shadow-lg shadow-primary/40 flex items-center justify-center transition-transform hover:scale-105 active:scale-95 cursor-pointer"
         onClick={onPlayPause}
-        aria-label={isPlaying ? "Pause" : "Play"}
+        aria-label={isBreathing ? "Pause" : "Play"}
       >
-        {isPlaying ? (
+        {isBreathing ? (
           <Pause size={32} fill="currentColor" />
         ) : (
           <Play size={32} fill="currentColor" className="ml-1" />
