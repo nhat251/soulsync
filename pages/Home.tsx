@@ -1,17 +1,29 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import { Bell, Frown, Meh, Smile, Play, Plus, Heart, Cloud, Zap, TrendingUp, Wind } from 'lucide-react';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import Sidebar from "../components/Sidebar";
+import {
+  Bell,
+  Frown,
+  Meh,
+  Smile,
+  Play,
+  Plus,
+  Heart,
+  Cloud,
+  Zap,
+  TrendingUp,
+  Wind,
+} from "lucide-react";
 
 const Home: React.FC = () => {
   const [selectedMood, setSelectedMood] = useState<number>(3);
 
   const moods = [
-    { level: 1, label: 'Tệ', Icon: Frown },
-    { level: 2, label: 'Buồn', Icon: Cloud },
-    { level: 3, label: 'Ổn', Icon: Meh },
-    { level: 4, label: 'Vui', Icon: Smile },
-    { level: 5, label: 'Tuyệt', Icon: Heart }, // Using heart for "Love it/Great"
+    { level: 1, label: "Tệ", Icon: Frown },
+    { level: 2, label: "Buồn", Icon: Cloud },
+    { level: 3, label: "Ổn", Icon: Meh },
+    { level: 4, label: "Vui", Icon: Smile },
+    { level: 5, label: "Tuyệt", Icon: Heart }, // Using heart for "Love it/Great"
   ];
 
   return (
@@ -22,9 +34,14 @@ const Home: React.FC = () => {
         <header className="flex justify-between items-start mb-8 pl-2">
           <div>
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-              SoulSync – <span className="text-primary font-medium">Nhẹ nhàng lắng nghe chính bạn</span>
+              SoulSync –{" "}
+              <span className="text-primary font-medium">
+                Nhẹ nhàng lắng nghe chính bạn
+              </span>
             </h1>
-            <p className="text-text-muted dark:text-gray-400">Chào Minh, hãy cùng chăm sóc tâm hồn mình nhé.</p>
+            <p className="text-text-muted dark:text-gray-400">
+              Chào Minh, hãy cùng chăm sóc tâm hồn mình nhé.
+            </p>
           </div>
           <div className="flex items-center gap-4 mr-12 md:mr-0">
             <button className="p-2 rounded-full bg-white dark:bg-surface-dark text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm relative">
@@ -32,8 +49,12 @@ const Home: React.FC = () => {
               <span className="absolute top-2 right-2 w-2 h-2 bg-red-400 rounded-full border border-white dark:border-surface-dark"></span>
             </button>
             <div className="text-right hidden md:block">
-              <p className="text-sm font-bold text-gray-800 dark:text-white">Minh Anh</p>
-              <p className="text-xs text-primary font-medium uppercase tracking-wide">Premium User</p>
+              <p className="text-sm font-bold text-gray-800 dark:text-white">
+                Minh Anh
+              </p>
+              <p className="text-xs text-primary font-medium uppercase tracking-wide">
+                Premium User
+              </p>
             </div>
           </div>
         </header>
@@ -43,10 +64,16 @@ const Home: React.FC = () => {
           <div className="col-span-12 lg:col-span-8 bg-surface-light dark:bg-card-dark rounded-3xl p-8 shadow-sm transition-colors duration-300">
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">Theo dõi cảm xúc</h2>
-                <p className="text-sm text-text-muted dark:text-gray-400 mt-1">Ghi lại rung động của bạn lúc này</p>
+                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+                  Theo dõi cảm xúc
+                </h2>
+                <p className="text-sm text-text-muted dark:text-gray-400 mt-1">
+                  Ghi lại rung động của bạn lúc này
+                </p>
               </div>
-              <span className="text-sm text-primary bg-accent-light dark:bg-primary/20 px-3 py-1 rounded-full">Hôm nay</span>
+              <span className="text-sm text-primary bg-accent-light dark:bg-primary/20 px-3 py-1 rounded-full">
+                Hôm nay
+              </span>
             </div>
             <div className="flex justify-between gap-4 mb-8 overflow-x-auto py-2">
               {moods.map((m, idx) => {
@@ -60,15 +87,17 @@ const Home: React.FC = () => {
                     <div
                       className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center transition-all ${
                         isSelected
-                          ? 'w-16 h-16 md:w-20 md:h-20 -mt-2 bg-mood-happy dark:bg-primary text-primary dark:text-white shadow-lg shadow-primary/20 scale-105 ring-4 ring-white dark:ring-card-dark'
-                          : 'bg-gray-50 dark:bg-white/5 text-gray-400 group-hover:bg-gray-100 dark:group-hover:bg-white/10'
+                          ? "w-16 h-16 md:w-20 md:h-20 -mt-2 bg-mood-happy dark:bg-primary text-primary dark:text-white shadow-lg shadow-primary/20 scale-105 ring-4 ring-white dark:ring-card-dark"
+                          : "bg-gray-50 dark:bg-white/5 text-gray-400 group-hover:bg-gray-100 dark:group-hover:bg-white/10"
                       }`}
                     >
                       <m.Icon size={isSelected ? 32 : 24} />
                     </div>
                     <span
                       className={`text-xs font-medium ${
-                        isSelected ? 'font-bold text-primary dark:text-primary-light' : 'text-gray-500 dark:text-gray-400'
+                        isSelected
+                          ? "font-bold text-primary dark:text-primary-light"
+                          : "text-gray-500 dark:text-gray-400"
                       }`}
                     >
                       {m.label}
@@ -121,11 +150,17 @@ const Home: React.FC = () => {
                 ></circle>
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-4xl font-bold text-gray-800 dark:text-white">05:00</span>
+                <span className="text-4xl font-bold text-gray-800 dark:text-white">
+                  05:00
+                </span>
               </div>
             </div>
-            <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-1">Hơi thở &amp; Thư giãn</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Cân bằng lại nhịp sống</p>
+            <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-1">
+              Hơi thở &amp; Thư giãn
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+              Cân bằng lại nhịp sống
+            </p>
             <Link
               to="/breathing"
               className="bg-white dark:bg-primary text-gray-900 dark:text-white px-8 py-3 rounded-2xl font-semibold shadow-sm hover:shadow-md hover:scale-105 transition-all flex items-center gap-2"
@@ -139,8 +174,12 @@ const Home: React.FC = () => {
           <div className="col-span-12 lg:col-span-8 bg-surface-light dark:bg-card-dark rounded-3xl p-8 shadow-sm flex flex-col">
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h2 className="text-xl font-bold text-gray-800 dark:text-white">Nhật ký tâm hồn</h2>
-                <p className="text-sm text-text-muted dark:text-gray-400 mt-1">Nơi lưu giữ những mảnh ký ức</p>
+                <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+                  Nhật ký tâm hồn
+                </h2>
+                <p className="text-sm text-text-muted dark:text-gray-400 mt-1">
+                  Nơi lưu giữ những mảnh ký ức
+                </p>
               </div>
               <Link
                 to="/journal"
@@ -153,26 +192,32 @@ const Home: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-gray-50 dark:bg-background-dark p-5 rounded-2xl hover:shadow-md transition-shadow cursor-pointer border border-transparent hover:border-gray-100 dark:hover:border-gray-700">
                 <div className="flex justify-between items-start mb-3">
-                  <span className="text-[10px] font-bold text-primary uppercase tracking-wider">Hôm nay, 14:20</span>
+                  <span className="text-[10px] font-bold text-primary uppercase tracking-wider">
+                    Hôm nay, 14:20
+                  </span>
                   <Heart size={14} className="text-blue-300" />
                 </div>
                 <h4 className="font-bold text-gray-800 dark:text-white mb-2 line-clamp-1">
                   Một buổi sáng bình yên lạ thường
                 </h4>
                 <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
-                  Hôm nay mình thức dậy sớm, pha một tách trà nóng và ngắm nhìn thành phố...
+                  Hôm nay mình thức dậy sớm, pha một tách trà nóng và ngắm nhìn
+                  thành phố...
                 </p>
               </div>
               <div className="bg-gray-50 dark:bg-background-dark p-5 rounded-2xl hover:shadow-md transition-shadow cursor-pointer border border-transparent hover:border-gray-100 dark:hover:border-gray-700">
                 <div className="flex justify-between items-start mb-3">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Hôm qua, 21:00</span>
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                    Hôm qua, 21:00
+                  </span>
                   <Cloud size={14} className="text-gray-300" />
                 </div>
                 <h4 className="font-bold text-gray-800 dark:text-white mb-2 line-clamp-1">
                   Vượt qua áp lực công việc
                 </h4>
                 <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
-                  Dù deadline rất nhiều nhưng mình đã cố gắng hoàn thành từng chút một...
+                  Dù deadline rất nhiều nhưng mình đã cố gắng hoàn thành từng
+                  chút một...
                 </p>
               </div>
             </div>
@@ -185,7 +230,9 @@ const Home: React.FC = () => {
           >
             <div>
               <div className="flex justify-between items-start">
-                <h3 className="text-lg font-bold text-gray-800 dark:text-white">Năng lượng cá nhân</h3>
+                <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                  Năng lượng cá nhân
+                </h3>
                 <Zap className="text-primary" size={24} />
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">
@@ -194,14 +241,18 @@ const Home: React.FC = () => {
             </div>
             <div className="flex items-end justify-between mt-8 relative z-10">
               <div>
-                <span className="text-5xl font-bold text-gray-800 dark:text-white">82%</span>
+                <span className="text-5xl font-bold text-gray-800 dark:text-white">
+                  82%
+                </span>
               </div>
               <div className="flex items-center text-primary text-xs font-bold gap-1 mb-2">
                 <TrendingUp size={16} />
                 +5%
               </div>
             </div>
-            <div className="absolute bottom-4 left-8 text-[10px] text-gray-400 uppercase tracking-widest">Xu hướng</div>
+            <div className="absolute bottom-4 left-8 text-[10px] text-gray-400 uppercase tracking-widest">
+              Xu hướng
+            </div>
             <div className="absolute bottom-0 right-0 left-0 h-24 pointer-events-none">
               <svg
                 className="w-full h-full text-blue-100 dark:text-primary/20 fill-current"
@@ -223,14 +274,17 @@ const Home: React.FC = () => {
 
         {/* Quote Footer */}
         <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[calc(100%-4rem)] md:w-[calc(100%-8rem)] md:ml-12 bg-gray-900 dark:bg-card-dark text-white p-6 md:p-8 rounded-3xl shadow-2xl flex flex-col items-center justify-center text-center z-40 transition-colors duration-300 pointer-events-none opacity-90 hover:opacity-100">
-            <p className="text-lg md:text-xl font-medium italic opacity-90 max-w-3xl leading-relaxed">
-              "Hạnh phúc không phải là điểm đến, mà là hành trình chúng ta đang đi."
-            </p>
-            <div className="mt-4 flex items-center gap-4 opacity-60">
-              <div className="h-[1px] w-12 bg-white"></div>
-              <span className="text-xs font-bold uppercase tracking-widest">Thích Nhất Hạnh</span>
-              <div className="h-[1px] w-12 bg-white"></div>
-            </div>
+          <p className="text-lg md:text-xl font-medium italic opacity-90 max-w-3xl leading-relaxed">
+            "Hạnh phúc không phải là điểm đến, mà là hành trình chúng ta đang
+            đi."
+          </p>
+          <div className="mt-4 flex items-center gap-4 opacity-60">
+            <div className="h-[1px] w-12 bg-white"></div>
+            <span className="text-xs font-bold uppercase tracking-widest">
+              Thích Nhất Hạnh
+            </span>
+            <div className="h-[1px] w-12 bg-white"></div>
+          </div>
         </div>
       </main>
     </div>

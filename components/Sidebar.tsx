@@ -1,13 +1,13 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Leaf, Home, Book, BarChart2, Wind } from 'lucide-react';
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { Leaf, Home, Book, BarChart2, Wind } from "lucide-react";
 
 const Sidebar: React.FC = () => {
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `w-12 h-12 flex items-center justify-center rounded-xl transition-all mb-2 ${
       isActive
-        ? 'bg-primary text-white shadow-lg shadow-primary/30'
-        : 'text-text-muted hover:bg-gray-100 dark:hover:bg-white/10 dark:text-gray-400'
+        ? "bg-primary text-white shadow-lg shadow-primary/30"
+        : "text-text-muted hover:bg-gray-100 dark:hover:bg-white/10 dark:text-gray-400"
     }`;
 
   return (
@@ -20,28 +20,36 @@ const Sidebar: React.FC = () => {
           <NavLink to="/" className={linkClass}>
             <Home size={24} />
           </NavLink>
-          <span className="text-[10px] font-medium text-text-muted dark:text-gray-500 -mt-2">Home</span>
+          <span className="text-[10px] font-medium text-text-muted dark:text-gray-500 -mt-2">
+            Home
+          </span>
         </div>
 
         <div className="flex flex-col items-center">
           <NavLink to="/journal" className={linkClass}>
             <Book size={24} />
           </NavLink>
-          <span className="text-[10px] font-medium text-text-muted dark:text-gray-500 -mt-2">Journal</span>
+          <span className="text-[10px] font-medium text-text-muted dark:text-gray-500 -mt-2">
+            Journal
+          </span>
         </div>
 
         <div className="flex flex-col items-center">
           <NavLink to="/insights" className={linkClass}>
             <BarChart2 size={24} />
           </NavLink>
-          <span className="text-[10px] font-medium text-text-muted dark:text-gray-500 -mt-2">Insights</span>
+          <span className="text-[10px] font-medium text-text-muted dark:text-gray-500 -mt-2">
+            Insights
+          </span>
         </div>
 
         <div className="flex flex-col items-center">
           <NavLink to="/breathing" className={linkClass}>
             <Wind size={24} />
           </NavLink>
-          <span className="text-[10px] font-medium text-text-muted dark:text-gray-500 -mt-2">Breathe</span>
+          <span className="text-[10px] font-medium text-text-muted dark:text-gray-500 -mt-2">
+            Breathe
+          </span>
         </div>
       </nav>
       <div className="mt-auto">
