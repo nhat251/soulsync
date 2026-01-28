@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 
 const Home: React.FC = () => {
+  console.log("haha");
+
   const [selectedMood, setSelectedMood] = useState<number>(3);
 
   const moods = [
