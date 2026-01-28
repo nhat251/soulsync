@@ -1,16 +1,8 @@
 import React, { useState } from "react";
-import { Frown, Meh, Smile, Heart, Cloud } from "lucide-react";
+import { MOODS } from "../../constants/data";
 
 const MoodTracker: React.FC = () => {
   const [selectedMood, setSelectedMood] = useState<number>(3);
-
-  const moods = [
-    { level: 1, label: "Awful", Icon: Frown },
-    { level: 2, label: "Sad", Icon: Cloud },
-    { level: 3, label: "Okay", Icon: Meh },
-    { level: 4, label: "Good", Icon: Smile },
-    { level: 5, label: "Great", Icon: Heart },
-  ];
 
   return (
     <div className="bg-surface-light dark:bg-card-dark rounded-3xl p-8 shadow-sm transition-colors duration-300">
@@ -27,36 +19,40 @@ const MoodTracker: React.FC = () => {
           Today
         </span>
       </div>
-      <div className="flex justify-between gap-4 mb-8 overflow-x-auto py-2">
-        {moods.map((m, idx) => {
-          const isSelected = selectedMood === idx;
-          return (
-            <button
-              key={idx}
-              onClick={() => setSelectedMood(idx)}
-              className="flex flex-col items-center gap-3 group min-w-[60px]"
-            >
-              <div
-                className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center transition-all ${
-                  isSelected
-                    ? "w-16 h-16 md:w-20 md:h-20 -mt-2 bg-mood-happy dark:bg-primary text-primary dark:text-white shadow-lg shadow-primary/20 scale-105 ring-4 ring-white dark:ring-card-dark"
-                    : "bg-gray-50 dark:bg-white/5 text-gray-400 group-hover:bg-gray-100 dark:group-hover:bg-white/10"
-                }`}
+      <div className="relative">
+        <div className="flex justify-between md:justify-between gap-4 mb-8 overflow-x-auto py-2 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          {MOODS.map((m, idx) => {
+            const isSelected = selectedMood === idx;
+            return (
+              <button
+                key={idx}
+                onClick={() => setSelectedMood(idx)}
+                className="flex flex-col items-center gap-3 group min-w-[60px] flex-shrink-0"
               >
-                <m.Icon size={isSelected ? 32 : 24} />
-              </div>
-              <span
-                className={`text-xs font-medium ${
-                  isSelected
-                    ? "font-bold text-primary dark:text-primary-light"
-                    : "text-gray-500 dark:text-gray-400"
-                }`}
-              >
-                {m.label}
-              </span>
-            </button>
-          );
-        })}
+                <div
+                  className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center transition-all ${
+                    isSelected
+                      ? "w-16 h-16 md:w-20 md:h-20 -mt-2 bg-mood-happy dark:bg-primary text-primary dark:text-white shadow-lg shadow-primary/20 scale-105 ring-4 ring-white dark:ring-card-dark"
+                      : "bg-gray-50 dark:bg-white/5 text-gray-400 group-hover:bg-gray-100 dark:group-hover:bg-white/10"
+                  }`}
+                >
+                  <m.Icon size={isSelected ? 32 : 24} />
+                </div>
+                <span
+                  className={`text-xs font-medium ${
+                    isSelected
+                      ? "font-bold text-primary dark:text-primary-light"
+                      : "text-gray-500 dark:text-gray-400"
+                  }`}
+                >
+                  {m.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        {/* Fade indicator for scrollable content */}
+        <div className="absolute right-0 top-0 bottom-8 w-12 bg-gradient-to-l from-surface-light dark:from-card-dark to-transparent pointer-events-none md:hidden" />
       </div>
       <div className="relative mt-6">
         <input
