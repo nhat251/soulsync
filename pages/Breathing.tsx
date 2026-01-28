@@ -15,240 +15,240 @@ import {
   Wind,
   Flame,
   Moon,
+  Volume2,
+  Pause,
+  RotateCcw,
 } from "lucide-react";
 
+/* ===================== CONFIG ===================== */
+const TRACK_DURATION = 180; // 3 phút
+
+const sounds = [
+  { icon: Wind, name: "Rừng thông", desc: "Tiếng chim hót" },
+  { icon: CloudRain, name: "Sóng biển", desc: "Êm dịu" },
+  { icon: Flame, name: "Lửa trại", desc: "Ấm áp" },
+  { icon: Moon, name: "Tiếng đêm", desc: "Côn trùng kêu" },
+];
+
 const Breathing: React.FC = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(260); // 4:20
+  /* ===================== BREATHING ===================== */
+  const [isBreathing, setIsBreathing] = useState(false);
+  const [breathTime, setBreathTime] = useState(300);
   const [phase, setPhase] = useState("Hít vào chậm");
 
   useEffect(() => {
     let interval: any;
-    if (isPlaying && timeLeft > 0) {
+    if (isBreathing && breathTime > 0) {
       interval = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
+        setBreathTime((prev) => prev - 1);
 
-        // Simple phase logic for demo
-        const mod = timeLeft % 16;
+        const mod = breathTime % 16;
         if (mod > 12) setPhase("Hít vào");
         else if (mod > 8) setPhase("Giữ");
         else if (mod > 4) setPhase("Thở ra");
         else setPhase("Giữ");
       }, 1000);
-    } else if (timeLeft === 0) {
-      setIsPlaying(false);
     }
     return () => clearInterval(interval);
-  }, [isPlaying, timeLeft]);
+  }, [isBreathing, breathTime]);
 
+  /* ===================== MUSIC ===================== */
+  const [currentTrack, setCurrentTrack] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [musicTime, setMusicTime] = useState(TRACK_DURATION);
+
+  const isFirstTrack = currentTrack === 0;
+  const isLastTrack = currentTrack === sounds.length - 1;
+
+  useEffect(() => {
+    let interval: any;
+
+    if (isPlaying && musicTime > 0) {
+      interval = setInterval(() => {
+        setMusicTime((prev) => prev - 1);
+      }, 1000);
+    }
+
+    if (musicTime === 0) {
+      if (!isLastTrack) {
+        selectTrack(currentTrack + 1);
+      } else {
+        setIsPlaying(false);
+      }
+    }
+
+    return () => clearInterval(interval);
+  }, [isPlaying, musicTime]);
+
+  const selectTrack = (index: number) => {
+    setCurrentTrack(index);
+    setMusicTime(TRACK_DURATION);
+    setIsPlaying(true);
+  };
+
+  const playPause = () => setIsPlaying((p) => !p);
+
+  const replayTrack = () => {
+    setMusicTime(TRACK_DURATION);
+    setIsPlaying(true);
+  };
+
+  const nextTrack = () => {
+    if (!isLastTrack) selectTrack(currentTrack + 1);
+  };
+
+  const prevTrack = () => {
+    if (!isFirstTrack) selectTrack(currentTrack - 1);
+  };
+
+  /* ===================== UTILS ===================== */
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
-    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    return `${m.toString().padStart(2, "0")}:${s
+      .toString()
+      .padStart(2, "0")}`;
   };
 
-  const sounds = [
-    { icon: Wind, name: "Rừng thông", desc: "Tiếng chim hót", color: "green" },
-    { icon: CloudRain, name: "Sóng biển", desc: "Êm dịu", color: "blue" },
-    { icon: Flame, name: "Lửa trại", desc: "Ấm áp", color: "orange" },
-    { icon: Moon, name: "Tiếng đêm", desc: "Côn trùng kêu", color: "purple" },
-  ];
-
+  /* ===================== RENDER ===================== */
   return (
     <div className="flex h-screen overflow-hidden bg-gradient-to-br from-[#f3f6f8] to-[#eef2f5] dark:from-[#111827] dark:to-[#1f2937]">
       <Sidebar />
-      <main className="flex-1 flex flex-col relative overflow-hidden">
-        {/* Header */}
-        <header className="flex items-center justify-between px-8 py-6 z-10">
+
+      <main className="flex-1 flex flex-col overflow-hidden">
+        {/* HEADER */}
+        <header className="flex items-center justify-between px-8 py-6">
           <div className="flex items-center gap-4">
-            <Link
-              to="/"
-              className="p-2 rounded-full hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors"
-            >
-              <ArrowLeft
-                size={24}
-                className="text-gray-500 dark:text-gray-400"
-              />
+            <Link to="/" className="p-2 rounded-full hover:bg-white/50">
+              <ArrowLeft size={22} />
             </Link>
-            <div className="flex items-center gap-2 text-xl font-bold text-gray-700 dark:text-gray-200">
-              <Leaf className="text-primary" size={24} />
-              <span>SoulSync</span>
+            <div className="flex items-center gap-2 text-xl font-bold">
+              <Leaf className="text-primary" />
+              SoulSync
             </div>
           </div>
-          <div className="bg-white dark:bg-card-dark px-4 py-2 rounded-full shadow-sm text-sm text-gray-500 dark:text-gray-300 font-medium border border-gray-100 dark:border-gray-700 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            Kỹ thuật: Box Breathing
+          <div className="px-4 py-2 rounded-full bg-white text-sm shadow">
+            Box Breathing
           </div>
         </header>
 
-        {/* Breathing Circle */}
-        <div className="flex-1 flex flex-col items-center justify-center relative z-0">
-          {/* Background Blobs */}
-          <div className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-tr from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 blur-3xl opacity-50 -z-10 animate-pulse"></div>
-
-          <div className="relative mb-12">
-            {/* Ripples */}
-            <div
-              className={`absolute inset-0 rounded-full border border-gray-100 dark:border-gray-700 scale-150 opacity-50 ${isPlaying ? "animate-ping" : ""}`}
-              style={{ animationDuration: "4s" }}
-            ></div>
-            <div
-              className={`absolute inset-0 rounded-full border border-gray-100 dark:border-gray-700 scale-[1.8] opacity-30 ${isPlaying ? "animate-ping" : ""}`}
-              style={{ animationDuration: "4s", animationDelay: "1s" }}
-            ></div>
-
-            <div
-              className={`w-72 h-72 rounded-full bg-white dark:bg-card-dark shadow-glow flex flex-col items-center justify-center relative z-10 ${isPlaying ? "animate-breathe" : ""}`}
-            >
-              <div className="text-6xl font-bold text-gray-800 dark:text-white tracking-tight tabular-nums">
-                {formatTime(timeLeft)}
-              </div>
-              <div className="text-primary font-medium mt-2 text-lg">
-                {phase}
-              </div>
-
-              {/* Progress Ring */}
-              <svg
-                className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none"
-                viewBox="0 0 100 100"
-              >
-                <circle
-                  className="text-gray-100 dark:text-gray-700"
-                  cx="50"
-                  cy="50"
-                  fill="none"
-                  r="46"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                ></circle>
-                <circle
-                  className="text-primary transition-all duration-1000"
-                  cx="50"
-                  cy="50"
-                  fill="none"
-                  r="46"
-                  stroke="currentColor"
-                  strokeDasharray="289"
-                  strokeDashoffset={289 - 289 * (timeLeft / 300)}
-                  strokeLinecap="round"
-                  strokeWidth="2"
-                ></circle>
-              </svg>
+        {/* BREATHING */}
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <div
+            className={`w-72 h-72 rounded-full bg-white shadow-glow flex flex-col items-center justify-center ${
+              isBreathing ? "animate-breathe" : ""
+            }`}
+          >
+            <div className="text-6xl font-bold">
+              {formatTime(breathTime)}
             </div>
+            <div className="text-primary mt-2">{phase}</div>
           </div>
 
-          {/* Controls */}
-          <PlayerControls
-            isPlaying={isPlaying}
-            onPlayPause={() => setIsPlaying(!isPlaying)}
-            onReset={() => setTimeLeft(300)}
-          />
+          <PlayerControls isBreathing={isBreathing}
+          onPlayPause={() => setIsBreathing(!isBreathing)}
+          onReset={() => setBreathTime(300)}></PlayerControls>
         </div>
 
-        {/* Player Bar */}
-        <div className="mx-8 mb-6 bg-white dark:bg-card-dark rounded-2xl p-4 shadow-sm flex items-center gap-6 z-20 border border-gray-50 dark:border-gray-700">
-          <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden relative group">
-            <img
-              alt="Album Art"
-              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-              src="https://picsum.photos/100/100"
-            />
+        {/* MUSIC PLAYER */}
+        <div className="mx-8 mb-6 bg-white rounded-2xl p-4 shadow flex items-center gap-6">
+          <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+            {React.createElement(sounds[currentTrack].icon, { size: 24 })}
           </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="font-bold text-gray-800 dark:text-white truncate">
-              Deep Relaxation
-            </h4>
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-              SoulSync Meditative Original
-            </p>
+
+          <div className="flex-1">
+            <h4 className="font-bold">{sounds[currentTrack].name}</h4>
+            <p className="text-xs text-gray-500">SoulSync Soundscape</p>
           </div>
+
           <div className="flex items-center gap-4">
-            <SkipBack
-              size={20}
-              className="text-gray-400 cursor-pointer hover:text-primary"
-            />
-            <button className="w-10 h-10 rounded-full bg-gray-800 dark:bg-white text-white dark:text-gray-800 flex items-center justify-center hover:scale-105 transition-transform">
-              <Play size={16} fill="currentColor" />
+            <button
+              onClick={prevTrack}
+              disabled={isFirstTrack}
+              className={isFirstTrack ? "opacity-30" : ""}
+            >
+              <SkipBack />
             </button>
-            <SkipForward
-              size={20}
-              className="text-gray-400 cursor-pointer hover:text-primary"
-            />
+
+            <button
+              onClick={playPause}
+              className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center"
+            >
+              {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+            </button>
+
+            <button
+              onClick={nextTrack}
+              disabled={isLastTrack}
+              className={isLastTrack ? "opacity-30" : ""}
+            >
+              <SkipForward />
+            </button>
+
+            <button onClick={replayTrack}>
+              <RotateCcw size={18} />
+            </button>
           </div>
-          <div className="flex-1 flex items-center gap-3 hidden md:flex">
-            <span className="text-xs font-mono text-gray-400">02:15</span>
-            <div className="flex-1 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden cursor-pointer group">
-              <div className="w-1/3 h-full bg-primary rounded-full group-hover:bg-primary-dark transition-colors relative"></div>
+
+          <div className="flex-1 hidden md:flex items-center gap-2">
+            <span className="text-xs font-mono">
+              {formatTime(TRACK_DURATION - musicTime)}
+            </span>
+            <div className="flex-1 h-1 bg-gray-200 rounded-full">
+              <div
+                className="h-full bg-primary rounded-full"
+                style={{
+                  width: `${
+                    ((TRACK_DURATION - musicTime) / TRACK_DURATION) * 100
+                  }%`,
+                }}
+              />
             </div>
-            <span className="text-xs font-mono text-gray-400">05:00</span>
+            <span className="text-xs font-mono">
+              {formatTime(TRACK_DURATION)}
+            </span>
           </div>
-          <div className="flex items-center gap-4 text-gray-400">
-            <Heart
-              size={20}
-              className="hover:text-red-400 cursor-pointer transition-colors"
-            />
-            <List
-              size={20}
-              className="hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer transition-colors"
-            />
-          </div>
+
+          <Heart className="text-gray-400 hover:text-red-400 cursor-pointer" />
+          <List className="text-gray-400 cursor-pointer" />
         </div>
       </main>
 
-      {/* Right Sidebar - Soundscapes */}
-      <aside className="w-80 h-full bg-surface-light dark:bg-surface-dark shadow-sm z-20 hidden lg:flex flex-col border-l border-gray-100 dark:border-gray-700/50">
-        <div className="p-6 pb-2">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-6">
-            <Volume1 size={18} />
-            <span className="font-bold text-sm tracking-wide uppercase">
-              Không gian âm thanh
-            </span>
-          </div>
+      {/* RIGHT SIDEBAR */}
+      <aside className="w-80 bg-white border-l hidden lg:flex flex-col p-6">
+        <div className="flex items-center gap-2 mb-6">
+          <Volume1 />
+          <span className="font-bold text-sm uppercase">
+            Không gian âm thanh
+          </span>
         </div>
-        <div className="flex-1 overflow-y-auto px-6 space-y-4 hide-scrollbar pb-6">
-          <div className="bg-primary/20 dark:bg-primary/10 rounded-2xl p-4 border border-primary/30 relative overflow-hidden group cursor-pointer transition-all hover:shadow-md">
-            <div className="absolute right-2 top-2 w-2 h-2 rounded-full bg-white animate-pulse"></div>
-            <div className="flex items-center gap-4 relative z-10">
-              <div className="w-10 h-10 rounded-full bg-white/60 dark:bg-white/10 flex items-center justify-center text-primary-dark dark:text-primary">
-                <CloudRain size={20} />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-800 dark:text-white">
-                  Mưa nhẹ
-                </h3>
-                <p className="text-xs text-gray-600 dark:text-gray-300">
-                  Đang phát
-                </p>
-              </div>
-            </div>
-            <div className="mt-4 flex items-center gap-2">
-              <Volume1 size={14} className="text-gray-500" />
-              <div className="flex-1 h-1 bg-white/40 rounded-full overflow-hidden">
-                <div className="w-3/4 h-full bg-primary rounded-full"></div>
-              </div>
-            </div>
-          </div>
 
-          {sounds.map((sound, idx) => (
-            <div
-              key={idx}
-              className="bg-white dark:bg-card-dark rounded-2xl p-4 border border-transparent hover:border-gray-200 dark:hover:border-gray-600 group cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-gray-700"
-            >
-              <div className="flex items-center gap-4">
-                <div
-                  className={`w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 group-hover:bg-white dark:group-hover:bg-gray-600 transition-colors`}
-                >
-                  <sound.icon size={20} />
+        <div className="space-y-4">
+          {sounds.map((s, i) => {
+            const isActive = i === currentTrack;
+
+            return (
+              <div
+                key={i}
+                onClick={() => selectTrack(i)}
+                className={`p-4 rounded-xl cursor-pointer flex gap-4 transition ${
+                  isActive
+                    ? "bg-primary/20 border border-primary"
+                    : "bg-gray-50 hover:bg-gray-100"
+                }`}
+              >
+                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                  <s.icon />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-700 dark:text-gray-200">
-                    {sound.name}
-                  </h3>
-                  <p className="text-xs text-gray-400">{sound.desc}</p>
+                  <h4 className="font-bold">{s.name}</h4>
+                  <p className="text-xs text-gray-500">
+                    {isActive ? "Đang phát" : s.desc}
+                  </p>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </aside>
     </div>

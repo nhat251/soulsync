@@ -3,21 +3,27 @@ import { Wind, Play } from "lucide-react";
 import PlayerControls from "../PlayerControls";
 
 const BreathingWidget: React.FC = () => {
-  const [isStarted, setIsStarted] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
-
-  useEffect(() => {
-    let interval: any;
-    if (isPlaying && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-    } else if (timeLeft === 0) {
-      setIsPlaying(false);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, timeLeft]);
+    /* ===================== BREATHING ===================== */
+    const [isStarted, setIsStarted] = useState(false);
+    const [isBreathing, setIsBreathing] = useState(false);
+    const [breathTime, setBreathTime] = useState(260);
+    const [phase, setPhase] = useState("Hít vào chậm");
+  
+    useEffect(() => {
+      let interval: any;
+      if (isBreathing && breathTime > 0) {
+        interval = setInterval(() => {
+          setBreathTime((prev) => prev - 1);
+  
+          const mod = breathTime % 16;
+          if (mod > 12) setPhase("Hít vào");
+          else if (mod > 8) setPhase("Giữ");
+          else if (mod > 4) setPhase("Thở ra");
+          else setPhase("Giữ");
+        }, 1000);
+      }
+      return () => clearInterval(interval);
+    }, [isBreathing, breathTime]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -55,7 +61,7 @@ const BreathingWidget: React.FC = () => {
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="text-4xl font-bold text-gray-800 dark:text-white">
-            {formatTime(timeLeft)}
+            {formatTime(breathTime)}
           </span>
         </div>
       </div>
@@ -69,7 +75,7 @@ const BreathingWidget: React.FC = () => {
         <button
           onClick={() => {
             setIsStarted(true);
-            setIsPlaying(true);
+            setIsBreathing(true);
           }}
           className="bg-white dark:bg-primary text-gray-900 dark:text-white px-8 py-3 rounded-2xl font-semibold shadow-sm hover:shadow-md hover:scale-105 transition-all flex items-center gap-2 cursor-pointer"
         >
@@ -79,9 +85,9 @@ const BreathingWidget: React.FC = () => {
       ) : (
         <div className="animate-fade-in">
           <PlayerControls
-            isPlaying={isPlaying}
-            onPlayPause={() => setIsPlaying(!isPlaying)}
-            onReset={() => setTimeLeft(300)}
+            isBreathing={isBreathing}
+            onPlayPause={() => setIsBreathing(!isBreathing)}
+            breathTime={() => setBreathTime(300)}
             className="!mt-0 gap-6"
           />
         </div>
