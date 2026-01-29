@@ -9,12 +9,6 @@ const Home: React.FC = () => {
   return (
     <div className="pb-32">
       <div className="mb-8 pl-2">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-          SoulSync –{" "}
-          <span className="text-primary font-medium">
-            Gently listen to yourself
-          </span>
-        </h1>
         <p className="text-text-muted dark:text-gray-400">
           Hello Minh, let's take care of your soul.
         </p>
