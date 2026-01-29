@@ -110,16 +110,18 @@ const Breathing: React.FC = () => {
   /* ===================== RENDER ===================== */
   return (
     <div className="flex h-full gap-6">
-      <main className="flex-1 flex flex-col overflow-hidden">
+<main className="flex-1 flex flex-col overflow-hidden">
         {/* BREATHING */}
         <div className="flex-1 flex flex-col items-center justify-center">
           <div
-            className={`w-72 h-72 rounded-full bg-white shadow-glow flex flex-col items-center justify-center ${
+            className={`w-72 h-72 rounded-full bg-white dark:bg-gray-800 shadow-glow flex flex-col items-center justify-center transition-colors ${
               isBreathing ? "animate-breathe" : ""
             }`}
           >
-            <div className="text-6xl font-bold">{formatTime(breathTime)}</div>
-            <div className="text-primary mt-2">{phase}</div>
+            <div className="text-6xl font-bold text-gray-900 dark:text-white">
+              {formatTime(breathTime)}
+            </div>
+            <div className="text-primary dark:text-primary mt-2">{phase}</div>
           </div>
 
           <PlayerControls
@@ -130,28 +132,39 @@ const Breathing: React.FC = () => {
         </div>
 
         {/* MUSIC PLAYER */}
-        <div className="mx-8 mb-6 bg-white rounded-2xl p-4 shadow flex items-center gap-6">
-          <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
-            {React.createElement(sounds[currentTrack].icon, { size: 24 })}
+        <div className="mx-8 mb-6 bg-white dark:bg-gray-800 rounded-2xl p-4 shadow flex items-center gap-6 transition-colors">
+          <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center transition-colors">
+            {React.createElement(sounds[currentTrack].icon, {
+              size: 24,
+              className: "text-gray-700 dark:text-gray-300",
+            })}
           </div>
 
           <div className="flex-1">
-            <h4 className="font-bold">{sounds[currentTrack].name}</h4>
-            <p className="text-xs text-gray-500">SoulSync Soundscape</p>
+            <h4 className="font-bold text-gray-900 dark:text-white">
+              {sounds[currentTrack].name}
+            </h4>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              SoulSync Soundscape
+            </p>
           </div>
 
           <div className="flex items-center gap-4">
             <button
               onClick={prevTrack}
               disabled={isFirstTrack}
-              className={isFirstTrack ? "opacity-30" : ""}
+              className={`text-gray-700 dark:text-gray-300 ${
+                isFirstTrack
+                  ? "opacity-30"
+                  : "hover:text-primary dark:hover:text-primary"
+              }`}
             >
               <SkipBack />
             </button>
 
             <button
               onClick={playPause}
-              className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center"
+              className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary/90 transition-colors"
             >
               {isPlaying ? <Pause size={16} /> : <Play size={16} />}
             </button>
@@ -159,23 +172,29 @@ const Breathing: React.FC = () => {
             <button
               onClick={nextTrack}
               disabled={isLastTrack}
-              className={isLastTrack ? "opacity-30" : ""}
+              className={`text-gray-700 dark:text-gray-300 ${
+                isLastTrack
+                  ? "opacity-30"
+                  : "hover:text-primary dark:hover:text-primary"
+              }`}
             >
               <SkipForward />
             </button>
 
-            <button onClick={replayTrack}>
+            <button
+              onClick={replayTrack}
+              className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
+            >
               <RotateCcw size={18} />
             </button>
           </div>
-
-          <div className="flex-1 hidden md:flex items-center gap-2">
-            <span className="text-xs font-mono">
+<div className="flex-1 hidden md:flex items-center gap-2">
+            <span className="text-xs font-mono text-gray-600 dark:text-gray-400">
               {formatTime(TRACK_DURATION - musicTime)}
             </span>
-            <div className="flex-1 h-1 bg-gray-200 rounded-full">
+            <div className="flex-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-full transition-colors">
               <div
-                className="h-full bg-primary rounded-full"
+                className="h-full bg-primary rounded-full transition-all"
                 style={{
                   width: `${
                     ((TRACK_DURATION - musicTime) / TRACK_DURATION) * 100
@@ -183,21 +202,21 @@ const Breathing: React.FC = () => {
                 }}
               />
             </div>
-            <span className="text-xs font-mono">
+            <span className="text-xs font-mono text-gray-600 dark:text-gray-400">
               {formatTime(TRACK_DURATION)}
             </span>
           </div>
 
-          <Heart className="text-gray-400 hover:text-red-400 cursor-pointer" />
-          <List className="text-gray-400 cursor-pointer" />
+          <Heart className="text-gray-400 dark:text-gray-500 hover:text-red-400 dark:hover:text-red-400 cursor-pointer transition-colors" />
+          <List className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer transition-colors" />
         </div>
       </main>
 
       {/* RIGHT SIDEBAR */}
-      <aside className="w-80 bg-white border-l hidden lg:flex flex-col p-6 rounded-2xl h-full overflow-y-auto">
+      <aside className="w-80 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 hidden lg:flex flex-col p-6 rounded-2xl h-full overflow-y-auto transition-colors">
         <div className="flex items-center gap-2 mb-6">
-          <Volume1 />
-          <span className="font-bold text-sm uppercase">
+          <Volume1 className="text-gray-700 dark:text-gray-300" />
+          <span className="font-bold text-sm uppercase text-gray-900 dark:text-white">
             Không gian âm thanh
           </span>
         </div>
@@ -210,18 +229,20 @@ const Breathing: React.FC = () => {
               <div
                 key={i}
                 onClick={() => selectTrack(i)}
-                className={`p-4 rounded-xl cursor-pointer flex gap-4 transition ${
+                className={`p-4 rounded-xl cursor-pointer flex gap-4 transition-all ${
                   isActive
-                    ? "bg-primary/20 border border-primary"
-                    : "bg-gray-50 hover:bg-gray-100"
+                    ? "bg-primary/20 dark:bg-primary/30 border border-primary"
+                    : "bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-transparent"
                 }`}
               >
-                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                  <s.icon />
+                <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center transition-colors">
+                  <s.icon className="text-gray-700 dark:text-gray-300" />
                 </div>
                 <div>
-                  <h4 className="font-bold">{s.name}</h4>
-                  <p className="text-xs text-gray-500">
+                  <h4 className="font-bold text-gray-900 dark:text-white">
+                    {s.name}
+                  </h4>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     {isActive ? "Đang phát" : s.desc}
                   </p>
                 </div>

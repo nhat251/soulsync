@@ -618,192 +618,194 @@ const Journal: React.FC = () => {
             </div>
 
             <div
-              className="flex-1 flex flex-col gap-4 overflow-y-auto hide-scrollbar pb-24"
+              className="flex-1 overflow-y-auto hide-scrollbar pb-32"
               onFocus={() => setIsToolbarVisible(true)}
             >
-              <input
-                className="text-2xl font-semibold bg-transparent border-none p-0 placeholder-gray-300 dark:placeholder-gray-600 focus:ring-0 text-gray-900 dark:text-white outline-none transition-all duration-300"
-                placeholder="Title for today..."
-                type="text"
-                value={currentTitle}
-                onChange={(e) => setCurrentTitle(e.target.value)}
-              />
+              <div className="flex flex-col gap-4 min-h-full">
+                <input
+                  className="text-2xl font-semibold bg-transparent border-none p-0 placeholder-gray-300 dark:placeholder-gray-600 focus:ring-0 text-gray-900 dark:text-white outline-none transition-all duration-300"
+                  placeholder="Title for today..."
+                  type="text"
+                  value={currentTitle}
+                  onChange={(e) => setCurrentTitle(e.target.value)}
+                />
 
-              {/* Mood and Tags Section */}
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3 flex-wrap">
-                  {/* Mood Selector */}
-                  <div className="relative">
-                    <button
-                      onClick={() => setShowMoodPicker(!showMoodPicker)}
-                      className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium text-gray-600 dark:text-gray-400"
-                    >
-                      {getMoodIcon(currentMood)}
-                      <span className="capitalize">{currentMood}</span>
-                    </button>
+                {/* Mood and Tags Section */}
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    {/* Mood Selector */}
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowMoodPicker(!showMoodPicker)}
+                        className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium text-gray-600 dark:text-gray-400"
+                      >
+                        {getMoodIcon(currentMood)}
+                        <span className="capitalize">{currentMood}</span>
+                      </button>
 
-                    {/* Mood Picker Dropdown */}
-                    {showMoodPicker && (
-                      <>
-                        <div
-                          className="fixed inset-0 z-10"
-                          onClick={() => setShowMoodPicker(false)}
-                        />
-                        <div className="absolute top-full mt-2 left-0 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-2 z-20 min-w-[200px] animate-scale-in">
-                          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-2 py-1 mb-1">
-                            Select Mood
-                          </p>
-                          {MOODS.map((mood) => {
-                            const Icon = mood.icon;
-                            return (
-                              <button
-                                key={mood.value}
-                                onClick={() => {
-                                  setCurrentMood(mood.value);
-                                  setShowMoodPicker(false);
-                                }}
-                                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 ${
-                                  currentMood === mood.value
-                                    ? "bg-emerald-50 dark:bg-emerald-900/20"
-                                    : ""
-                                }`}
-                              >
-                                <Icon size={18} className={mood.color} />
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  {mood.label}
-                                </span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Tag Selector */}
-                  <div className="relative">
-                    <button
-                      onClick={() => setShowTagPicker(!showTagPicker)}
-                      className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium text-gray-600 dark:text-gray-400"
-                    >
-                      <Tag size={14} />
-                      <span>Add Tags</span>
-                    </button>
-
-                    {/* Tag Picker Dropdown */}
-                    {showTagPicker && (
-                      <>
-                        <div
-                          className="fixed inset-0 z-10"
-                          onClick={() => setShowTagPicker(false)}
-                        />
-                        <div className="absolute top-full mt-2 left-0 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-3 z-20 min-w-[280px] animate-scale-in">
-                          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1 mb-2">
-                            Select Tags
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                            {PREDEFINED_TAGS.map((tag) => {
-                              const isSelected = currentTags.some(
-                                (t) => t.label === tag.label,
-                              );
+                      {/* Mood Picker Dropdown */}
+                      {showMoodPicker && (
+                        <>
+                          <div
+                            className="fixed inset-0 z-30"
+                            onClick={() => setShowMoodPicker(false)}
+                          />
+                          <div className="absolute top-full mt-2 left-0 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-2 z-40 min-w-[200px] animate-scale-in">
+                            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-2 py-1 mb-1">
+                              Select Mood
+                            </p>
+                            {MOODS.map((mood) => {
+                              const Icon = mood.icon;
                               return (
                                 <button
-                                  key={tag.label}
-                                  onClick={() => handleToggleTag(tag)}
-                                  className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all duration-200 hover:scale-105 ${
-                                    isSelected
-                                      ? getTagColor(tag.color) +
-                                        " ring-2 ring-offset-1 ring-emerald-500"
-                                      : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                                  key={mood.value}
+                                  onClick={() => {
+                                    setCurrentMood(mood.value);
+                                    setShowMoodPicker(false);
+                                  }}
+                                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                                    currentMood === mood.value
+                                      ? "bg-emerald-50 dark:bg-emerald-900/20"
+                                      : ""
                                   }`}
                                 >
-                                  {tag.label}
+                                  <Icon size={18} className={mood.color} />
+                                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {mood.label}
+                                  </span>
                                 </button>
                               );
                             })}
                           </div>
-                        </div>
-                      </>
-                    )}
+                        </>
+                      )}
+                    </div>
+
+                    {/* Tag Selector */}
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowTagPicker(!showTagPicker)}
+                        className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium text-gray-600 dark:text-gray-400"
+                      >
+                        <Tag size={14} />
+                        <span>Add Tags</span>
+                      </button>
+
+                      {/* Tag Picker Dropdown */}
+                      {showTagPicker && (
+                        <>
+                          <div
+                            className="fixed inset-0 z-30"
+                            onClick={() => setShowTagPicker(false)}
+                          />
+                          <div className="absolute top-full mt-2 left-0 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-3 z-40 min-w-[280px] animate-scale-in">
+                            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-1 mb-2">
+                              Select Tags
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {PREDEFINED_TAGS.map((tag) => {
+                                const isSelected = currentTags.some(
+                                  (t) => t.label === tag.label,
+                                );
+                                return (
+                                  <button
+                                    key={tag.label}
+                                    onClick={() => handleToggleTag(tag)}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all duration-200 hover:scale-105 ${
+                                      isSelected
+                                        ? getTagColor(tag.color) +
+                                          " ring-2 ring-offset-1 ring-emerald-500"
+                                        : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                                    }`}
+                                  >
+                                    {tag.label}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Selected Tags Display */}
+                  {currentTags.length > 0 && (
+                    <div className="flex gap-2 flex-wrap">
+                      {currentTags.map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide ${getTagColor(
+                            tag.color,
+                          )} transition-all duration-300 hover:scale-105`}
+                        >
+                          {tag.label}
+                          <button
+                            onClick={() => handleRemoveTag(tag.label)}
+                            className="hover:bg-black/10 dark:hover:bg-white/10 rounded-full p-0.5 transition-colors"
+                          >
+                            <X size={12} />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <Clock size={14} />
+                    <span className="font-medium">
+                      Noted at {getCurrentTime()}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <MapPin size={14} />
+                    <input
+                      type="text"
+                      value={currentLocation}
+                      onChange={(e) => setCurrentLocation(e.target.value)}
+                      className="font-medium bg-transparent border-none outline-none w-20 text-gray-600 dark:text-gray-400"
+                    />
                   </div>
                 </div>
 
-                {/* Selected Tags Display */}
-                {currentTags.length > 0 && (
-                  <div className="flex gap-2 flex-wrap">
-                    {currentTags.map((tag, idx) => (
-                      <span
-                        key={idx}
-                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide ${getTagColor(
-                          tag.color,
-                        )} transition-all duration-300 hover:scale-105`}
+                {/* Image Preview Section */}
+                {uploadedImages.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {uploadedImages.map((image, index) => (
+                      <div
+                        key={index}
+                        className="relative group rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 aspect-square animate-scale-in"
                       >
-                        {tag.label}
-                        <button
-                          onClick={() => handleRemoveTag(tag.label)}
-                          className="hover:bg-black/10 dark:hover:bg-white/10 rounded-full p-0.5 transition-colors"
-                        >
-                          <X size={12} />
-                        </button>
-                      </span>
+                        <img
+                          src={image}
+                          alt={`Upload ${index + 1}`}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                          <button
+                            onClick={() => handleRemoveImage(index)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-2 bg-red-500 hover:bg-red-600 rounded-full text-white transform hover:scale-110 active:scale-95"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                        <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
+                          {index + 1}/{uploadedImages.length}
+                        </div>
+                      </div>
                     ))}
                   </div>
                 )}
+
+                <textarea
+                  className="w-full min-h-[300px] resize-none bg-transparent border-none p-0 text-lg leading-relaxed text-gray-800 dark:text-gray-300 placeholder-gray-300 dark:placeholder-gray-600 focus:ring-0 outline-none transition-all duration-300"
+                  placeholder="Start sharing your story here..."
+                  value={currentContent}
+                  onChange={(e) => setCurrentContent(e.target.value)}
+                ></textarea>
               </div>
-
-              <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-                <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800">
-                  <Clock size={14} />
-                  <span className="font-medium">
-                    Noted at {getCurrentTime()}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-800">
-                  <MapPin size={14} />
-                  <input
-                    type="text"
-                    value={currentLocation}
-                    onChange={(e) => setCurrentLocation(e.target.value)}
-                    className="font-medium bg-transparent border-none outline-none w-20 text-gray-600 dark:text-gray-400"
-                  />
-                </div>
-              </div>
-
-              {/* Image Preview Section */}
-              {uploadedImages.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 my-4">
-                  {uploadedImages.map((image, index) => (
-                    <div
-                      key={index}
-                      className="relative group rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 aspect-square animate-scale-in"
-                    >
-                      <img
-                        src={image}
-                        alt={`Upload ${index + 1}`}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
-                        <button
-                          onClick={() => handleRemoveImage(index)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-2 bg-red-500 hover:bg-red-600 rounded-full text-white transform hover:scale-110 active:scale-95"
-                        >
-                          <X size={16} />
-                        </button>
-                      </div>
-                      <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
-                        {index + 1}/{uploadedImages.length}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <textarea
-                className="w-full flex-1 resize-none bg-transparent border-none p-0 mt-4 text-lg leading-relaxed text-gray-800 dark:text-gray-300 placeholder-gray-300 dark:placeholder-gray-600 focus:ring-0 outline-none transition-all duration-300"
-                placeholder="Start sharing your story here..."
-                value={currentContent}
-                onChange={(e) => setCurrentContent(e.target.value)}
-              ></textarea>
             </div>
 
             {/* Hidden File Input */}
@@ -816,9 +818,9 @@ const Journal: React.FC = () => {
               className="hidden"
             />
 
-            {/* Floating Action Bar */}
+            {/* Floating Action Bar - FIXED z-index */}
             <div
-              className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white dark:bg-gray-800 p-2 pl-4 pr-2 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-gray-100 dark:border-gray-700 z-10 transition-all duration-300 hover:shadow-[0_12px_40px_rgb(0,0,0,0.15)] dark:hover:shadow-[0_12px_40px_rgb(0,0,0,0.5)] ${
+              className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white dark:bg-gray-800 p-2 pl-4 pr-2 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-gray-100 dark:border-gray-700 z-50 transition-all duration-300 hover:shadow-[0_12px_40px_rgb(0,0,0,0.15)] dark:hover:shadow-[0_12px_40px_rgb(0,0,0,0.5)] ${
                 isToolbarVisible
                   ? "translate-y-0 opacity-100"
                   : "translate-y-4 opacity-0"
