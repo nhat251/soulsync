@@ -3,21 +3,26 @@ import { Link } from "react-router-dom";
 import { ResponsiveContainer, AreaChart, Area, XAxis, Tooltip } from "recharts";
 import { Brain, ArrowRight, Leaf } from "lucide-react";
 import { useJournal, MoodType } from "@/contexts/journalContext";
+import Lottie from "lottie-react";
+import fireAnimation from "@/assets/lotties/fire-animation.json";
+import positiveAnimation from "@/assets/lotties/positive-animation.json";
+import negativeAnimation from "@/assets/lotties/negative-animation.json";
+
 
 const Insights: React.FC = () => {
   const { entries } = useJournal();
 
   // Phân loại cảm xúc thành tích cực và tiêu cực
   const moodCategories: Record<MoodType, "positive" | "neutral" | "negative"> =
-    {
-      happy: "positive",
-      excited: "positive",
-      grateful: "positive",
-      loved: "positive",
-      neutral: "neutral",
-      sad: "negative",
-      anxious: "negative",
-    };
+  {
+    happy: "positive",
+    excited: "positive",
+    grateful: "positive",
+    loved: "positive",
+    neutral: "neutral",
+    sad: "negative",
+    anxious: "negative",
+  };
 
   // Tính toán dữ liệu cho biểu đồ tuần này
   const weeklyData = useMemo(() => {
@@ -241,6 +246,23 @@ const Insights: React.FC = () => {
     year: "numeric",
   });
 
+  const monthlyEntries = useMemo(() => {
+    return entries.filter((e) => {
+      const entryDate = new Date(e.timestamp);
+      const now = new Date();
+      return entryDate.getMonth() === now.getMonth() &&
+        entryDate.getFullYear() === now.getFullYear();
+    }).length;
+  }, [entries]);
+
+  const dominantMood: "positive" | "negative" | "neutral" =
+  statistics.positivePercent >= 50
+    ? "positive"
+    : statistics.negativePercent >= 50
+      ? "negative"
+      : "neutral";
+
+
   return (
     <div className="font-sans">
       <main>
@@ -405,82 +427,196 @@ const Insights: React.FC = () => {
           </div>
         </div>
 
-        {/* Calendar Heatmap */}
-        <div className="bg-surface-light dark:bg-card-dark rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 mb-6">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h2 className="text-xl font-bold mb-1 text-gray-800 dark:text-white">
-                Lịch sử cảm xúc {monthName}
-              </h2>
-              <p className="text-sm text-text-muted dark:text-gray-400">
-                Ghi nhận liên tiếp:{" "}
-                <span className="font-semibold text-primary">
-                  {statistics.streak} ngày
-                </span>
-              </p>
+        {/* Calendar & Stats Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          {/* Calendar Heatmap */}
+          <div className="lg:col-span-2 bg-surface-light dark:bg-card-dark rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-xl font-bold mb-1 text-gray-800 dark:text-white">
+                  Lịch sử cảm xúc {monthName}
+                </h2>
+                <p className="text-sm text-text-muted dark:text-gray-400">
+                  Ghi nhận liên tiếp:{" "}
+                  <span className="font-semibold text-primary">
+                    {statistics.streak} ngày
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-7 gap-3 text-center">
+              {["CN", "T2", "T3", "T4", "T5", "T6", "T7"].map((d) => (
+                <div
+                  key={d}
+                  className="text-xs text-text-muted dark:text-gray-500 uppercase mb-2 font-medium"
+                >
+                  {d}
+                </div>
+              ))}
+
+              {calendarData.map((day, i) => {
+                if (!day) {
+                  return <div key={`empty-${i}`} className="aspect-square"></div>;
+                }
+
+                const moodColor =
+                  day.mood === "positive"
+                    ? "bg-green-500"
+                    : day.mood === "negative"
+                      ? "bg-orange-500"
+                      : day.mood === "neutral"
+                        ? "bg-blue-500"
+                        : "bg-primary";
+
+                return (
+                  <div
+                    key={day.day}
+                    className={`aspect-square rounded-xl flex flex-col items-center justify-center relative group hover:ring-2 hover:ring-primary/20 transition cursor-pointer text-sm font-medium
+                               ${day.hasData
+                        ? "bg-primary/5 dark:bg-primary/10"
+                        : "bg-background-light dark:bg-gray-800/50 text-gray-400 dark:text-gray-500"
+                      }
+                               ${day.isToday
+                        ? "bg-white dark:bg-gray-700 shadow-md border-2 border-primary/20 text-primary font-bold"
+                        : ""
+                      }
+                          `}
+                    title={
+                      day.hasData
+                        ? `${day.entryCount} ghi chép - ${day.mood === "positive"
+                          ? "Tích cực"
+                          : day.mood === "negative"
+                            ? "Tiêu cực"
+                            : "Trung lập"
+                        }`
+                        : "Chưa có ghi chép"
+                    }
+                  >
+                    {day.day}
+                    {day.hasData && (
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full mt-1 ${moodColor}`}
+                      ></span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Legend */}
+            <div className="flex items-center justify-center gap-6 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-green-500"></span>
+                <span className="text-xs text-gray-600 dark:text-gray-400">Tích cực</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+                <span className="text-xs text-gray-600 dark:text-gray-400">Trung lập</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-orange-500"></span>
+                <span className="text-xs text-gray-600 dark:text-gray-400">Tiêu cực</span>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-7 gap-4 text-center">
-            {["CN", "T2", "T3", "T4", "T5", "T6", "T7"].map((d) => (
-              <div
-                key={d}
-                className="text-xs text-text-muted dark:text-gray-500 uppercase mb-2 font-medium"
-              >
-                {d}
-              </div>
-            ))}
+          {/* Monthly Stats Card */}
+          <div className="lg:col-span-1 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-6 shadow-sm border border-emerald-100 dark:border-gray-800">
+            <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-6">
+              Thống kê tháng này
+            </h3>
 
-            {calendarData.map((day, i) => {
-              if (!day) {
-                return <div key={`empty-${i}`} className="aspect-square"></div>;
-              }
-
-              const moodColor =
-                day.mood === "positive"
-                  ? "bg-green-500"
-                  : day.mood === "negative"
-                    ? "bg-orange-500"
-                    : day.mood === "neutral"
-                      ? "bg-blue-500"
-                      : "bg-primary";
-
-              return (
-                <div
-                  key={day.day}
-                  className={`aspect-square rounded-2xl flex flex-col items-center justify-center relative group hover:ring-2 hover:ring-primary/20 transition cursor-pointer text-sm font-medium
-                             ${
-                               day.hasData
-                                 ? "bg-primary/5 dark:bg-primary/10"
-                                 : "bg-background-light dark:bg-gray-800/50 text-gray-400 dark:text-gray-500"
-                             }
-                             ${
-                               day.isToday
-                                 ? "bg-white dark:bg-gray-700 shadow-md border-2 border-primary/20 text-primary font-bold"
-                                 : ""
-                             }
-                        `}
-                  title={
-                    day.hasData
-                      ? `${day.entryCount} ghi chép - ${
-                          day.mood === "positive"
-                            ? "Tích cực"
-                            : day.mood === "negative"
-                              ? "Tiêu cực"
-                              : "Trung lập"
-                        }`
-                      : "Chưa có ghi chép"
-                  }
-                >
-                  {day.day}
-                  {day.hasData && (
-                    <span
-                      className={`w-1.5 h-1.5 rounded-full mt-1 ${moodColor}`}
-                    ></span>
-                  )}
+            <div className="space-y-5">
+              {/* Total Entries */}
+              <div className="bg-white/50 dark:bg-white/5 rounded-xl p-4 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">
+                    Tổng ghi chép
+                  </span>
                 </div>
-              );
-            })}
+                <div className="text-3xl font-bold text-primary">
+                  {monthlyEntries}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  ghi chép trong {monthName}
+                </p>
+              </div>
+
+              {/* Streak */}
+              <div className="bg-white/50 dark:bg-white/5 rounded-xl p-4 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">
+                    Chuỗi ngày
+                  </span>
+                  <div className="w-10 h-10">
+                    <Lottie
+                      animationData={fireAnimation}
+                      loop={true}
+                      autoplay={true}
+
+                    />
+                  </div>
+
+                </div>
+                <div className="text-3xl font-bold text-orange-600 dark:text-orange-500">
+                  {statistics.streak}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  ngày liên tiếp ghi chép
+                </p>
+              </div>
+
+              {/* Most Common Mood */}
+              <div className="bg-white/50 dark:bg-white/5 rounded-xl p-4 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">
+                    Cảm xúc chủ đạo
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-14 h-14">
+                    {dominantMood === "positive" && (
+                      <Lottie animationData={positiveAnimation} loop autoplay />
+                    )}
+
+                    {dominantMood === "negative" && (
+                      <Lottie animationData={negativeAnimation} loop autoplay />
+                    )}
+
+                    {dominantMood === "neutral" && (
+                      <span className="text-3xl">😐</span>
+                    )}
+                  </div>
+
+                  <div>
+                    <div className="text-lg font-bold text-gray-800 dark:text-white">
+                      {statistics.positivePercent >= 50 ? "Tích cực" :
+                        statistics.negativePercent >= 50 ? "Tiêu cực" : "Trung lập"}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {Math.max(statistics.positivePercent, statistics.negativePercent, statistics.neutralPercent)}% các ghi chép
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Achievement */}
+              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl p-4 border border-yellow-200 dark:border-yellow-800">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🏆</span>
+                  <span className="text-xs font-bold text-yellow-700 dark:text-yellow-500 uppercase tracking-wider">
+                    Thành tích
+                  </span>
+                </div>
+                <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                  {statistics.streak >= 7 ? "Chuyên gia ghi chép!" :
+                    statistics.streak >= 3 ? "Đang làm tốt lắm!" :
+                      statistics.totalEntries >= 5 ? "Khởi đầu tuyệt vời!" :
+                        "Hãy tiếp tục ghi chép!"}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
